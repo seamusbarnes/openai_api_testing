@@ -1,9 +1,43 @@
-def get_response_model(response):
-    return response.model
-def get_response_usage(response):
-    return response.usage.prompt_tokens, response.usage.completion_tokens
-def get_response_content(response):
-    return response.choices[0].message.content
+from openai import OpenAI
+from datetime import datetime
+
+def call_api_single(message_content,
+                    client=None,
+                    model=None,
+                    system_prompt=None,
+                    max_tokens=None,
+                    temperature=None):
+    model = 'gpt-4o' if not model else model
+    system_prompt = 'You are a helpful assistant' if not system_prompt else system_prompt
+    temperature = 1.0 if not temperature else temperature
+
+    if not client:
+        client = OpenAI()
+
+    messages = [
+        {
+            'role': 'system',
+            'content': system_prompt
+        },
+        {
+            'role': 'user',
+            'content': message_content
+        }
+    ]
+
+    t0 = datetime.now()
+
+    response = client.chat.completions.create(
+        model=model,
+        messages=messages,
+        n=1,
+        max_tokens=max_tokens,
+        response_format={'type': 'text'},
+        temperature=temperature
+    )
+
+    t1 = datetime.now()
+    return response, t0, t1
 
 def get_response_cost(response):
     pricing_units = 1e6
@@ -39,7 +73,14 @@ def get_response_cost(response):
 
     return input_cost + output_cost
 
-def get_response_metadata(response):
+def get_response_model(response):
+    return response.model
+def get_response_usage(response):
+    return response.usage.prompt_tokens, response.usage.completion_tokens
+def get_response_content(response):
+    return response.choices[0].message.content
+
+def get_response_metadata(response, verbose=True):
     model = get_response_model(response)
     input_tokens, output_tokens = get_response_usage(response)
     cost = get_response_cost(response)
