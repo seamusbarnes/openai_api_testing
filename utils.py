@@ -75,13 +75,17 @@ def get_response_cost(response):
 
 def get_response_model(response):
     return response.model
+
 def get_response_usage(response):
     return response.usage.prompt_tokens, response.usage.completion_tokens
+
 def get_response_content(response):
     return response.choices[0].message.content
 
 def get_response_metadata(response, verbose=True):
+
     model = get_response_model(response)
     input_tokens, output_tokens = get_response_usage(response)
     cost = get_response_cost(response)
+
     return model, (input_tokens, output_tokens), cost
