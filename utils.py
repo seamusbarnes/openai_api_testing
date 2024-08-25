@@ -1,5 +1,7 @@
 from openai import OpenAI
 from datetime import datetime
+import os
+import json
 
 def call_api_single(message_content,
                     client=None,
@@ -65,7 +67,7 @@ def get_response_cost(response):
                }
     
     model = get_response_model(response)
-    input_tokens, output_tokens = get_response_usage(response)
+    input_tokens, output_tokens = get_response_tokens(response)
 
     input_rate, output_rate = pricing[model]
     input_cost = (input_tokens/pricing_units) * input_rate
@@ -76,7 +78,7 @@ def get_response_cost(response):
 def get_response_model(response):
     return response.model
 
-def get_response_usage(response):
+def get_response_tokens(response):
     return response.usage.prompt_tokens, response.usage.completion_tokens
 
 def get_response_content(response):
@@ -85,7 +87,39 @@ def get_response_content(response):
 def get_response_metadata(response, verbose=True):
 
     model = get_response_model(response)
-    input_tokens, output_tokens = get_response_usage(response)
+    input_tokens, output_tokens = get_response_tokens(response)
     cost = get_response_cost(response)
 
     return model, (input_tokens, output_tokens), cost
+
+def log_interaction(
+        response,
+        user_input,
+        timestamp_call,
+        timestamp_response,
+        data_path='data/',
+        log_file='log.txt'):
+    
+    model, tokens, cost = get_response_metadata(response)
+    response_message = get_response_content(response)
+    response_time = (timestamp_response - timestamp_call).total_seconds()
+
+    timestamp_call_str = timestamp_call.strftime('%Y-%m-%d %H:%M:%S')
+    timestamp_response_str = timestamp_response.strftime('%Y-%m-%d %H:%M:%S')
+
+    metadata = {"timestamp_call": timestamp_call_str,
+                "timestamp_response": timestamp_response_str,
+                "input_tokens": tokens[0],
+                "output_tokens": tokens[1],
+                "total_tokens": sum(tokens),
+                "input_message": user_input,
+                "response_message": response_message,
+                "model": model,
+                "cost ($)": f'{cost:.4f}',
+                "response_time (s)": response_time,  # Example response time in seconds
+            }
+    
+    with open(os.path.join(data_path, log_file), 'a') as file:
+        json.dump(metadata, file, indent=4)
+        file.write('\n')
+    return

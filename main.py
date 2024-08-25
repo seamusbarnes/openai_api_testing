@@ -6,8 +6,6 @@ from datetime import datetime
 from utils import *
 import json
 
-
-
 def log_interaction(
         response,
         user_input,
