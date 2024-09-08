@@ -3,3 +3,4 @@ __pycache__/
 data/
 .sesskey
 log.txt
+.ipynb_checkpoints/
