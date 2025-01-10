@@ -118,8 +118,6 @@ def main():
         if user_input.lower() == 'print_conv_cost()':
             print(f'conversation cost: {cost:.4f} $')
             continue
-
-        
         
         print(f'{datetime.now()}: User input sent')
         print(f'User message {message_count}: {user_input}')
