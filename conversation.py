@@ -74,7 +74,10 @@ def log_interaction(
                 "cost ($)": f'{cost:.4f}',
                 "response_time (s)": response_time,  # Example response time in seconds
             }
-    
+
+    # Create the directory if it does not exist
+    os.makedirs(data_path, exist_ok=True)
+
     with open(os.path.join(data_path, log_file), 'a') as file:
         json.dump(metadata, file, indent=4)
         file.write('\n')
