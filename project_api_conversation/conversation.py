@@ -1,9 +1,15 @@
 import os
 from openai import OpenAI
 from datetime import datetime
-from utils_response import *
-import os
 import json
+import sys
+
+# Append the parent directory to sys.path
+# sys.path.append('/Users/jamesbyers/code/github/openai_api_testing/utils')
+sys.path.append('/Users/jamesbyers/code/github/openai_api_testing/utils')
+
+from utils_response import *
+
 
 def api_conversation(
         message,
@@ -126,6 +132,8 @@ def main():
         
         print(f'{datetime.now()}: User input sent')
         print(f'User message {message_count}: {user_input}')
+        
+
         
         if initial:
             response, messages, t0, t1 = api_conversation(

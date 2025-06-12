@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 
 from pydantic import BaseModel
 
-from utils_response import *
+from utils.utils_response import *
 import argparse
 
 def main():
